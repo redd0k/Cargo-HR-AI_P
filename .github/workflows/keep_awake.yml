@@ -1,0 +1,25 @@
+name: Keep App Awake
+
+on:
+  schedule:
+    # 每天北京时间上午 8 点和晚上 8 点各运行一次
+    - cron: '0 0,12 * * *'
+  workflow_dispatch: # 允许你手动点击运行测试
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Prepare empty commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit --allow-empty -m "Keep-alive: $(date)"
+          
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
